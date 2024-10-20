@@ -13,7 +13,6 @@ public class ControlCenter implements Runnable {
     }
 
     public static void reportFire(int x, int y) {
-        System.out.println("Central de Controle: Incêndio reportado no nó da borda (" + x + ", " + y + ")");
-        // Lógica para combate ao incêndio
+//        System.out.println("Central de Controle: Incêndio reportado no nó da borda (" + x + ", " + y + ")");
     }
 }

@@ -17,7 +17,7 @@ public class FireGenerator implements Runnable {
             synchronized (forest) {
                 if (forest[x][y] == 'T') {
                     forest[x][y] = '@'; // Gera fogo em uma célula
-                    System.out.println("Fogo iniciado em (" + x + ", " + y + ")");
+//                    System.out.println("Fogo iniciado em (" + x + ", " + y + ")");
                 }
             }
 
