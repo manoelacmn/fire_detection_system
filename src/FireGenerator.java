@@ -11,21 +11,27 @@ public class FireGenerator implements Runnable {
     @Override
     public void run() {
         while (true) {
-            int x = random.nextInt(Main.SIZE);
-            int y = random.nextInt(Main.SIZE);
+            igniteRandomLocation();
+            sleep(3000);
+        }
+    }
 
-            synchronized (forest) {
-                if (forest[x][y] == 'T') {
-                    forest[x][y] = '@'; // Gera fogo em uma célula
-//                    System.out.println("Fogo iniciado em (" + x + ", " + y + ")");
-                }
-            }
+    private void igniteRandomLocation() {
+        int row = random.nextInt(Main.GRID_SIZE);
+        int col = random.nextInt(Main.GRID_SIZE);
 
-            try {
-                Thread.sleep(3000); // Espera 3 segundos antes de gerar o próximo fogo
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        synchronized (forest) {
+            if (forest[row][col] == 'T') {
+                forest[row][col] = '@';
             }
+        }
+    }
+
+    private void sleep(int milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 }

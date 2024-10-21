@@ -1,48 +1,53 @@
-import java.util.Random;
-
 public class Main {
-    public static final int SIZE = 30; // Tamanho da floresta 30x30
-    public static volatile char[][] forest = new char[SIZE][SIZE]; // Matriz da floresta
+    public static final int GRID_SIZE = 30; // Tamanho da floresta 30x30
+    public static volatile char[][] forest = new char[GRID_SIZE][GRID_SIZE];
 
     public static void main(String[] args) throws InterruptedException {
-        initializeForest();
+        configureForestGrid();
 
-        SensorNode[][] sensors = new SensorNode[SIZE][SIZE];
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
-                sensors[i][j] = new SensorNode(i, j, forest);
-                new Thread(sensors[i][j]).start();
+        initializeSensorNodes();
+
+        initializeControlCenter();
+
+        initializeFireGenerator();
+
+        continuouslyDisplayForestState();
+    }
+
+    private static void configureForestGrid() {
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
+                forest[i][j] = (Math.random() > 0.2) ? 'T' : '-';
             }
         }
+    }
 
-        ControlCenter controlCenter = new ControlCenter(forest);
-        new Thread(controlCenter).start();
+    private static void initializeSensorNodes() {
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
+                new Thread(new SensorNode(i, j, forest)).start();
+            }
+        }
+    }
 
-        FireGenerator fireGenerator = new FireGenerator(forest);
-        new Thread(fireGenerator).start();
+    private static void initializeControlCenter() {
+        new Thread(new ControlCenter(forest)).start();
+    }
 
-        // Loop para visualizar a matriz
+    private static void initializeFireGenerator() {
+        new Thread(new FireGenerator(forest)).start();
+    }
+
+    private static void continuouslyDisplayForestState() throws InterruptedException {
         while (true) {
-            printForest();
-            Thread.sleep(3000); // Atualiza a visualização a cada 3 segundos
+            displayForest();
+            Thread.sleep(3000);
         }
     }
 
-    private static void initializeForest() {
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
-                if (Math.random() > 0.2) {
-                    forest[i][j] = 'T'; // Célula monitorada por um nó sensor ativo
-                } else {
-                    forest[i][j] = '-'; // Área livre
-                }
-            }
-        }
-    }
-
-    private static void printForest() {
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
+    private static void displayForest() {
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
                 System.out.print(forest[i][j] + " ");
             }
             System.out.println();

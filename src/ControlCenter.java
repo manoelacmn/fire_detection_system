@@ -8,11 +8,11 @@ public class ControlCenter implements Runnable {
     @Override
     public void run() {
         while (true) {
-            // Central monitorando bordas e tomando ações
+            // Monitorando incêndios reportados pelos nós sensores
         }
     }
 
-    public static void reportFire(int x, int y) {
-//        System.out.println("Central de Controle: Incêndio reportado no nó da borda (" + x + ", " + y + ")");
+    public static void reportFire(int row, int col) {
+        System.out.println("Control Center: Fire reported at (" + row + ", " + col + ")");
     }
 }

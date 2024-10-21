@@ -1,52 +1,63 @@
 public class SensorNode implements Runnable {
-    private int x, y;
-    private char[][] forest;
-    private boolean running = true;
+    private final int row;
+    private final int col;
+    private final char[][] forest;
 
-    public SensorNode(int x, int y, char[][] forest) {
-        this.x = x;
-        this.y = y;
+    public SensorNode(int row, int col, char[][] forest) {
+        this.row = row;
+        this.col = col;
         this.forest = forest;
     }
 
     @Override
     public void run() {
-        while (running) {
+        while (isMonitoring()) {
             synchronized (forest) {
-                if (forest[x][y] == '@') { // Detecta fogo
-                    System.out.println("Incêndio detectado no nó (" + x + ", " + y + ")");
-                    notifyNeighbors();
-                    if (isOnEdge()) {
-                        ControlCenter.reportFire(x, y);
-                    }
-                    forest[x][y] = '/'; // Marca célula como queimada após detectar
+                if (isBurning()) {
+                    detectAndReportFire();
+                    propagateFireToNeighbors();
+                    markAsBurned();
                 }
             }
-            try {
-                Thread.sleep(1000); // Checa a cada 1 segundo
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            sleep(1000);
         }
     }
 
-    private void notifyNeighbors() {
-        // Comunicação com os vizinhos para propagar a mensagem de incêndio
-        if (x > 0 && forest[x - 1][y] == 'T') {
-            forest[x - 1][y] = '@'; // Propaga incêndio para cima
-        }
-        if (x < Main.SIZE - 1 && forest[x + 1][y] == 'T') {
-            forest[x + 1][y] = '@'; // Propaga incêndio para baixo
-        }
-        if (y > 0 && forest[x][y - 1] == 'T') {
-            forest[x][y - 1] = '@'; // Propaga incêndio para a esquerda
-        }
-        if (y < Main.SIZE - 1 && forest[x][y + 1] == 'T') {
-            forest[x][y + 1] = '@'; // Propaga incêndio para a direita
+    private boolean isMonitoring() {
+        return true;
+    }
+
+    private boolean isBurning() {
+        return forest[row][col] == '@';
+    }
+
+    private void detectAndReportFire() {
+        System.out.println("Fire detected at (" + row + ", " + col + ")");
+        if (isOnForestEdge()) {
+            ControlCenter.reportFire(row, col);
         }
     }
 
-    private boolean isOnEdge() {
-        return x == 0 || x == Main.SIZE - 1 || y == 0 || y == Main.SIZE - 1;
+    private void propagateFireToNeighbors() {
+        if (row > 0 && forest[row - 1][col] == 'T') forest[row - 1][col] = '@';
+        if (row < Main.GRID_SIZE - 1 && forest[row + 1][col] == 'T') forest[row + 1][col] = '@';
+        if (col > 0 && forest[row][col - 1] == 'T') forest[row][col - 1] = '@';
+        if (col < Main.GRID_SIZE - 1 && forest[row][col + 1] == 'T') forest[row][col + 1] = '@';
+    }
+
+    private void markAsBurned() {
+        forest[row][col] = '/';
+    }
+
+    private boolean isOnForestEdge() {
+        return row == 0 || row == Main.GRID_SIZE - 1 || col == 0 || col == Main.GRID_SIZE - 1;
+    }
+
+    private void sleep(int milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }
