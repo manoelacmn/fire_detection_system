@@ -19,8 +19,8 @@ Para rodar o projeto, você precisa ter instalado:
 
 1. Clone este repositório em sua máquina:
     ```bash
-    git clone [link do repositório]
-    cd [nome do diretório]
+    git clone https://github.com/manoelacmn/fire_detection_system.git
+    cd fire_detection_system
     ```
 
 2. Compile os arquivos Java utilizando o comando:
